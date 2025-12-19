@@ -90,7 +90,7 @@ struct color_list_t {
  * Commonly used standard colors
  */
 static struct color_list_t color_list = {
-	.size = 8,
+	.size = 11,
 	.colors = {
 		{ .name = "BLACK",    .code = 0x000000 },  // 0
 		{ .name = "RED",      .code = 0xFF0000 },  // 1
@@ -100,6 +100,9 @@ static struct color_list_t color_list = {
 		{ .name = "MAGENTA",  .code = 0xFF00FF },  // 5
 		{ .name = "CYAN",     .code = 0x00FFFF },  // 6
 		{ .name = "WHITE",    .code = 0xFFFFFF },  // 7
+		{ .name = "DUCKEGG",  .code = 0x19C864 },  // 8
+		{ .name = "PURPLE",   .code = 0x320F64 },  // 9
+		{ .name = "GOLD",     .code = 0xe0b643 },  // 10
 	}
 };
 
