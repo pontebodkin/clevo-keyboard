@@ -171,7 +171,9 @@ int uniwill_add_interface(struct uniwill_interface_t *interface)
 	if (strcmp(interface->string_id, UNIWILL_INTERFACE_WMI_STRID) == 0)
 		uniwill_interfaces.wmi = interface;
 	else {
+#ifdef DEBUG
 		TUXEDO_DEBUG("trying to add unknown interface\n");
+#endif
 		mutex_unlock(&uniwill_interface_modification_lock);
 		return -EINVAL;
 	}
@@ -244,7 +246,9 @@ static int keyboard_notifier_callb(struct notifier_block *nb, unsigned long code
 				// If the last keys up were 85 -> 29 -> 125
 				// manually report KEY_F21
 				if (prevprev_key == KEY_ZENKAKUHANKAKU && prev_key == KEY_LEFTCTRL) {
+#ifdef DEBUG
 					TUXEDO_DEBUG("Touchpad Toggle\n");
+#endif
 					schedule_work(&uniwill_key_event_work);
 					ret = NOTIFY_OK;
 				}
