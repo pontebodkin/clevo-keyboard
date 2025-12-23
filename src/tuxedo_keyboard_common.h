@@ -28,11 +28,8 @@
 #include <linux/input.h>
 #include <linux/input/sparse-keymap.h>
 
-/* ::::  Module specific Constants and simple Macros   :::: */
-#define __TUXEDO_PR(lvl, fmt, ...) do { pr_##lvl(fmt, ##__VA_ARGS__); } while (0)
-#define TUXEDO_INFO(fmt, ...) __TUXEDO_PR(info, fmt, ##__VA_ARGS__)
-#define TUXEDO_ERROR(fmt, ...) __TUXEDO_PR(err, fmt, ##__VA_ARGS__)
-#define TUXEDO_DEBUG(fmt, ...) __TUXEDO_PR(debug, "[%s:%u] " fmt, __func__, __LINE__, ##__VA_ARGS__)
+#include "tuxedo_logging.h"
+#include "tuxedo_keyboard_colours.h"
 
 #ifndef DRIVER_NAME
 #define DRIVER_NAME "tuxedo_keyboard"
@@ -75,35 +72,5 @@ inline bool sparse_keymap_report_known_event(struct input_dev *dev, unsigned int
 
 	return false;
 }
-
-struct color_t {
-	u32 code;
-	char* name;
-};
-
-struct color_list_t {
-	uint size;
-	struct color_t colors[];
-};
-
-/**
- * Commonly used standard colors
- */
-static struct color_list_t color_list = {
-	.size = 11,
-	.colors = {
-		{ .name = "BLACK",    .code = 0x000000 },  // 0
-		{ .name = "RED",      .code = 0xFF0000 },  // 1
-		{ .name = "GREEN",    .code = 0x00FF00 },  // 2
-		{ .name = "BLUE",     .code = 0x0000FF },  // 3
-		{ .name = "YELLOW",   .code = 0xFFFF00 },  // 4
-		{ .name = "MAGENTA",  .code = 0xFF00FF },  // 5
-		{ .name = "CYAN",     .code = 0x00FFFF },  // 6
-		{ .name = "WHITE",    .code = 0xFFFFFF },  // 7
-		{ .name = "DUCKEGG",  .code = 0x19C864 },  // 8
-		{ .name = "PURPLE",   .code = 0x320F64 },  // 9
-		{ .name = "GOLD",     .code = 0xe0b643 },  // 10
-	}
-};
 
 #endif

@@ -16,7 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this software.  If not, see <https://www.gnu.org/licenses/>.
 #
-obj-m :=	src/tuxedo_keyboard.o \
+obj-m :=	src/clevo_leds.o \
+		src/tuxedo_keyboard.o \
 		src/clevo_wmi.o \
 		src/clevo_acpi.o \
 		src/tuxedo_io/tuxedo_io.o \
