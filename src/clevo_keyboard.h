@@ -253,7 +253,9 @@ static void clevo_keyboard_event_callb(u32 event)
 {
 	u32 key_event = event;
 
+#ifdef DEBUG
 	TUXEDO_DEBUG("Clevo event: %0#6x\n", event);
+#endif
 
 	switch (key_event) {
 		case CLEVO_EVENT_KB_LEDS_CYCLE_MODE:

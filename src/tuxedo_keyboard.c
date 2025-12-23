@@ -78,17 +78,23 @@ struct platform_device *tuxedo_keyboard_init_driver(struct tuxedo_keyboard_drive
 	int err;
 	struct platform_device *new_platform_device = NULL;
 
+#ifdef DEBUG
 	TUXEDO_DEBUG("init driver start\n");
+#endif
 
 	mutex_lock(&tuxedo_keyboard_init_driver_lock);
 
 	if (!IS_ERR_OR_NULL(tuxedo_platform_device)) {
 		// If already initialized, don't proceed
+#ifdef DEBUG
 		TUXEDO_DEBUG("platform device already initialized\n");
+#endif
 		goto init_driver_exit;
 	} else {
 		// Otherwise, attempt to initialize structures
+#ifdef DEBUG
 		TUXEDO_DEBUG("create platform bundle\n");
+#endif
 		new_platform_device = platform_create_bundle(
 			tk_driver->platform_driver, tk_driver->probe, NULL, 0, NULL, 0);
 
@@ -99,14 +105,18 @@ struct platform_device *tuxedo_keyboard_init_driver(struct tuxedo_keyboard_drive
 			goto init_driver_exit;
 		}
 
+#ifdef DEBUG
 		TUXEDO_DEBUG("initialize input device\n");
+#endif
 		if (tk_driver->key_map != NULL) {
 			err = tuxedo_input_init(tk_driver->key_map);
 			if (unlikely(err)) {
 				TUXEDO_ERROR("Could not register input device\n");
 				tk_driver->input_device = NULL;
 			} else {
+#ifdef DEBUG
 				TUXEDO_DEBUG("input device registered\n");
+#endif
 				tk_driver->input_device = tuxedo_input_device;
 			}
 		}
@@ -146,19 +156,25 @@ void tuxedo_keyboard_remove_driver(struct tuxedo_keyboard_driver *tk_driver)
 	if (specified_driver_differ_from_used)
 		return;
 
+#ifdef DEBUG
 	TUXEDO_DEBUG("tuxedo_input_exit()\n");
+#endif
 	tuxedo_input_exit();
+
+#ifdef DEBUG
 	TUXEDO_DEBUG("platform_device_unregister()\n");
+#endif
 	if (!IS_ERR_OR_NULL(tuxedo_platform_device)) {
 		platform_device_unregister(tuxedo_platform_device);
 		tuxedo_platform_device = NULL;
 	}
+#ifdef DEBUG
 	TUXEDO_DEBUG("platform_driver_unregister()\n");
+#endif
 	if (!IS_ERR_OR_NULL(current_driver)) {
 		platform_driver_unregister(current_driver->platform_driver);
 		current_driver = NULL;
 	}
-
 }
 EXPORT_SYMBOL(tuxedo_keyboard_remove_driver);
 
@@ -396,7 +412,12 @@ static const struct dmi_system_id tuxedo_dmi_string_match[] __initconst = {
 
 static int __init tuxedo_keyboard_init(void)
 {
-	TUXEDO_INFO("module init\n");
+#ifdef DEBUG
+    TUXEDO_DEBUG("===============================\n");
+    TUXEDO_DEBUG("===         RESTART         ===\n");
+    TUXEDO_DEBUG("===============================\n");
+#endif
+    TUXEDO_INFO("module init\n");
 
 	if (!(dmi_check_system(tuxedo_dmi_string_match)
 	    || (x86_match_cpu(skip_tuxedo_dmi_string_check_match)

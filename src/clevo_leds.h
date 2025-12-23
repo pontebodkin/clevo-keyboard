@@ -115,7 +115,9 @@ static int clevo_evaluate_set_rgb_color(u32 zone, u32 color)
 static int clevo_evaluate_set_keyboard_status(u8 state)
 {
 	u32 cmd = 0xE0000000;
+#ifdef DEBUG
 	TUXEDO_INFO("Set keyboard enabled to: %d\n", state);
+#endif
 
 	if (state == 0) {
 		cmd |= 0x003001;
