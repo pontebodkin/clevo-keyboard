@@ -42,6 +42,7 @@ void clevo_leds_restore_state_extern(void);
 void clevo_leds_notify_brightness_change_extern(void);
 void clevo_leds_set_brightness_extern(enum led_brightness brightness);
 void clevo_leds_set_color_extern(u32 color);
+void clevo_leds_toggle_on_off(void);
 unsigned int convert_colour_to_hex(const char *colour_string);
 
 // TODO The following should go into a seperate .c file, but for this to work more reworking is required in the tuxedo_keyboard structure.
@@ -562,6 +563,23 @@ void clevo_leds_set_color_extern(u32 color) {
 	}
 }
 EXPORT_SYMBOL(clevo_leds_set_color_extern);
+
+static int brightness_store = 0;
+void clevo_leds_toggle_on_off()
+{
+	if (brightness_store == 0) {
+		if (clevo_kb_backlight_type == CLEVO_KB_BACKLIGHT_TYPE_FIXED_COLOR) {
+			brightness_store = clevo_led_cdev.brightness;
+		} else {
+			brightness_store = clevo_mcled_cdevs[0].led_cdev.brightness;
+		}
+		clevo_leds_set_brightness_extern(0);
+	} else {
+		clevo_leds_set_brightness_extern(brightness_store);
+		brightness_store = 0;
+	}
+}
+EXPORT_SYMBOL(clevo_leds_toggle_on_off);
 
 MODULE_LICENSE("GPL");
 

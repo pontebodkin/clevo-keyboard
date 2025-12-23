@@ -274,6 +274,9 @@ static void clevo_keyboard_event_callb(u32 event)
 		case CLEVO_EVENT_KB_LEDS_CYCLE_BRIGHTNESS:
 			clevo_leds_notify_brightness_change_extern();
 			break;
+		case CLEVO_EVENT_KB_LEDS_TOGGLE:
+			clevo_leds_toggle_on_off();
+			break;
 		default:
 			break;
 	}
