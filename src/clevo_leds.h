@@ -23,6 +23,7 @@
 #include <linux/types.h>
 #include <linux/platform_device.h>
 #include <linux/leds.h>
+#include <linux/string.h>
 
 enum clevo_kb_backlight_types {
 	CLEVO_KB_BACKLIGHT_TYPE_NONE = 0x00,
@@ -41,6 +42,7 @@ void clevo_leds_restore_state_extern(void);
 void clevo_leds_notify_brightness_change_extern(void);
 void clevo_leds_set_brightness_extern(enum led_brightness brightness);
 void clevo_leds_set_color_extern(u32 color);
+u32 convert_colour_to_hex(const char *colour_string);
 
 // TODO The following should go into a seperate .c file, but for this to work more reworking is required in the tuxedo_keyboard structure.
 
@@ -60,6 +62,7 @@ void clevo_leds_set_color_extern(u32 color);
 #define CLEVO_KBD_BRIGHTNESS_WHITE_MAX_5		0x05 // Devices <= Intel 7th gen had a different white control with 5 brightness values + off
 #define CLEVO_KBD_BRIGHTNESS_WHITE_MAX_5_DEFAULT	0x00
 
+// WHITE
 #define CLEVO_KB_COLOR_DEFAULT_RED			0xff
 #define CLEVO_KB_COLOR_DEFAULT_GREEN			0xff
 #define CLEVO_KB_COLOR_DEFAULT_BLUE			0xff
@@ -67,6 +70,11 @@ void clevo_leds_set_color_extern(u32 color);
 
 static enum clevo_kb_backlight_types clevo_kb_backlight_type = CLEVO_KB_BACKLIGHT_TYPE_NONE;
 static bool leds_initialized = false;
+
+
+static char *color = "WHITE";
+module_param(color, charp, 0000);
+MODULE_PARM_DESC(color, "The default keyboard colour");
 
 /**
  * Color scaling quirk list
@@ -291,6 +299,24 @@ static struct led_classdev_mc clevo_mcled_cdevs[3] = {
 	}
 };
 
+u32 convert_colour_to_hex(const char *colour_string)
+{
+	// Lookup name in colour_list structure
+    for (u8 i = 0; i < color_list.size; i++) {
+        if (strcmp(color_list.colors[i].name, colour_string) == 0) {
+            return color_list.colors[i].code;
+        }
+    }
+
+    // Not a valid colour name so should be a hex RGB value 
+	long hex_num;
+	int ret = kstrtol(colour_string, 16, &hex_num);
+    if (ret == 0) return hex_num;
+
+    // If all else fails return the default colour
+    return CLEVO_KB_COLOR_DEFAULT;
+}
+
 int clevo_leds_init(struct platform_device *dev)
 {
 	int ret, i;
@@ -363,7 +389,7 @@ int clevo_leds_init(struct platform_device *dev)
 	if (clevo_kb_backlight_type == CLEVO_KB_BACKLIGHT_TYPE_FIXED_COLOR)
 		clevo_leds_set_brightness_extern(clevo_led_cdev.brightness);
 	else
-		clevo_leds_set_color_extern(CLEVO_KB_COLOR_DEFAULT);
+		clevo_leds_set_color_extern(convert_colour_to_hex(color));
 
 	if (clevo_kb_backlight_type == CLEVO_KB_BACKLIGHT_TYPE_FIXED_COLOR) {
 		pr_debug("Registering fixed color leds interface\n");
